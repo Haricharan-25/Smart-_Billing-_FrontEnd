@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Billing - Enterprise Control Panel</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050b14;
+            --surface-glass: rgba(10, 22, 37, 0.7);
+            --border-glass: rgba(0, 212, 255, 0.15);
+            --primary: #0A84FF;
+            --secondary: #4DA3FF;
+            --accent-glow: #00D4FF;
+            --text-main: #FFFFFF;
+            --text-muted: #9EAEB8;
+            --success-glow: #00FFCC;
+            --warning-glow: #FFB300;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            max-height: 100vh;
+            max-width: 100vw;
+            display: grid;
+            grid-template-columns: 460px 1fr; 
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND LAYER --- */
+        #gridCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* --- LEFT SIDE DECK: Control Profile Input --- */
+        .control-deck {
+            background: linear-gradient(180deg, rgba(10, 22, 37, 0.9) 0%, rgba(5, 11, 20, 0.98) 100%);
+            border-right: 1px solid var(--border-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        /* --- RIGHT SIDE VIEW: Data Registry Table --- */
+        .ledger-view {
+            background: rgba(7, 17, 31, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .ledger-header {
+            padding: 1.75rem 2.5rem;
+            background: rgba(10, 22, 37, 0.5);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        .section-title {
+            font-size: 1.35rem; 
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-main);
+            text-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--accent-glow);
+            text-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .form-container {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .form-container::-webkit-scrollbar { width: 4px; }
+        .form-container::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.3); border-radius: 2px; }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-size: 0.8rem; 
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.85rem 1.1rem; 
+            background: rgba(5, 11, 20, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            font-size: 1rem; 
+            color: var(--text-main);
+            transition: all 0.25s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-glow);
+            background: rgba(10, 22, 37, 0.95);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        /* --- FOOTER REGION --- */
+        .deck-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-indicator {
+            font-size: 0.8rem; 
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .sidebar-indicator span {
+            color: var(--accent-glow);
+            font-weight: 600;
+        }
+
+        /* --- ACTION WRAPPER FOR BUTTONS --- */
+        .action-button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, #0052D4) 100%;
+            color: #ffffff;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 8px;
+            font-size: 0.85rem; 
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn.secondary-action {
+            background: rgba(10, 22, 37, 0.8);
+            border: 1px solid var(--border-glass);
+            color: var(--accent-glow);
+            box-shadow: none;
+        }
+
+        .action-btn:hover {
+            box-shadow: 0 0 22px rgba(0, 212, 255, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .action-btn.secondary-action:hover {
+            border-color: var(--accent-glow);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .action-btn.cancel-action {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+            box-shadow: none;
+        }
+        
+        .action-btn.cancel-action:hover {
+            background: rgba(239, 68, 68, 0.2);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        /* --- FULL SCREEN LEDGER TABLE --- */
+        .table-wrapper {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .table-wrapper::-webkit-scrollbar { width: 8px; }
+        .table-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: 4px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 1.05rem; 
+        }
+
+        th, td {
+            padding: 1.25rem 2.5rem; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background-color: #08121f;
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 0.85rem; 
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            z-index: 1;
+            box-shadow: inset 0 -1px 0 rgba(0, 212, 255, 0.15);
+        }
+
+        tr {
+            transition: background-color 0.15s ease;
+            cursor: pointer;
+        }
+
+        tr:hover {
+            background-color: rgba(10, 132, 255, 0.05);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem; 
+            font-weight: 700;
+            padding: 0.25rem 0.65rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-top: 0.4rem;
+        }
+
+        .frequent-badge { background-color: rgba(234, 88, 12, 0.15); color: #FF7A32; border: 1px solid rgba(234, 88, 12, 0.3); }
+        .standard-badge { background-color: rgba(10, 132, 255, 0.15); color: var(--secondary); border: 1px solid rgba(10, 132, 255, 0.3); }
+
+        .row-actions-cell {
+            text-align: right;
+        }
+
+        .edit-row-btn {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--border-glass);
+            color: var(--accent-glow);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .edit-row-btn:hover {
+            background: var(--accent-glow);
+            color: var(--bg-dark);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .crypto-metric {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        /* --- INVOICE ENGINE OVERLAY MODAL --- */
+        .invoice-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 7, 13, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .invoice-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .invoice-box {
+            background: #0c1625;
+            border: 1px solid var(--accent-glow);
+            box-shadow: 0 0 35px rgba(0, 212, 255, 0.25);
+            width: 100%;
+            max-width: 650px;
+            border-radius: 12px;
+            padding: 2.5rem;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .invoice-overlay.active .invoice-box {
+            transform: scale(1);
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .invoice-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .invoice-row span:first-child {
+            color: var(--text-muted);
+        }
+
+        .invoice-row span:last-child, .invoice-row strong {
+            text-align: right;
+        }
+
+        .invoice-inputs {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(5, 11, 20, 0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .invoice-inputs input {
+            padding: 0.6rem;
+            font-size: 0.95rem;
+        }
+
+        .close-invoice-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            float: right;
+            transition: all 0.2s ease;
+        }
+
+        .close-invoice-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="gridCanvas"></canvas>
+
+<section class="control-deck">
+    <div>
+        <h2 class="section-title" id="deckTitle">
+            <i class="bx bx-id-card"></i> Profile Entry Deck
+        </h2>
+        
+        <form id="billingForm" class="form-container">
+            <div class="input-group">
+                <label for="cust-invoice-id">Invoice ID</label>
+                <input type="text" id="cust-invoice-id" placeholder="e.g., INV-1001" required>
+            </div>
+
+            <div class="input-group">
+                <label for="cust-name">Customer Name</label>
+                <input type="text" id="cust-name" placeholder="Alex Rivera" required>
+            </div>
+
+            <div class="input-group">
+                <label for="cust-phone">Contact Number</label>
+                <input type="tel" id="cust-phone" placeholder="(555) 000-0000" maxlength="14" required>
+            </div>
+
+            <div class="input-group">
+                <label for="cust-email">Email Address</label>
+                <input type="email" id="cust-email" placeholder="alex@example.com" required>
+            </div>
+
+            <div class="input-group">
+                <label for="entry-date">System Entry Date</label>
+                <input type="date" id="entry-date" required>
+            </div>
+
+            <div class="input-group">
+                <label for="cust-address">Customer Address</label>
+                <input type="text" id="cust-address" placeholder="123 Innovation Way, Tech City" required>
+            </div>
+        </form>
+    </div>
+
+    <div class="deck-footer">
+        <p class="sidebar-indicator" id="stateIndicator">
+            <i class="bx bx-shield-quarter" style="color: var(--accent-glow)"></i>
+            Submissions permanently save to your browser's storage database.
+        </p>
+        <div class="action-button-group" id="actionBtnGroup">
+            <button type="button" id="saveBtn" class="action-btn secondary-action"><i class="bx bx-save"></i> Save Profile</button>
+            <button type="button" id="submitBtn" class="action-btn"><i class="bx bx-check-shield"></i> Commit</button>
+        </div>
+    </div>
+</section>
+
+<main class="ledger-view">
+    <header class="ledger-header">
+        <h3 class="section-title">
+            <i class="bx bx-server"></i> Active Ledger Directory
+        </h3>
+        <div class="crypto-metric">
+            <i class="bx bx-pulse bx-spin" style="color: var(--success-glow)"></i> LOCAL_STORAGE_ACTIVE // MANUAL_ID
+        </div>
+    </header>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Invoice ID</th>
+                    <th>Date Added</th>
+                    <th>Customer Name</th>
+                    <th>Contact Details</th>
+                    <th>Customer Address</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div class="invoice-overlay" id="invoiceOverlay">
+    <div class="invoice-box">
+        <div class="invoice-header">
+            <div>
+                <h2 style="color: var(--accent-glow); font-size: 1.5rem; letter-spacing: 0.05em;"><i class="bx bx-receipt"></i> INVOICE MATRIX</h2>
+                <span style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">SYS_REF: <span id="invRef"></span></span>
+            </div>
+            <div style="text-align: right;">
+                <div id="invTotalDisplay" style="font-weight: 700; color: var(--success-glow); font-size: 1.4rem;">$ 0.00</div>
+                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">System Provisioning</span>
+            </div>
+        </div>
+        <div class="invoice-body">
+            <div class="invoice-row"><span>Invoice ID:</span> <strong id="invIdTrack" style="color: var(--secondary); font-family: monospace;"></strong></div>
+            <div class="invoice-row"><span>Client Target:</span> <strong id="invName" style="color: var(--text-main)"></strong></div>
+            <div class="invoice-row"><span>Secure Routing Line:</span> <span id="invPhone"></span></div>
+            <div class="invoice-row"><span>Electronic Terminal:</span> <span id="invEmail"></span></div>
+            <div class="invoice-row"><span>Filing Cycle Timestamp:</span> <span id="invDate"></span></div>
+            <div class="invoice-row"><span>Registered Point of Presence:</span> <span id="invAddress" style="text-align: right; max-width: 300px;"></span></div>
+        </div>
+
+        <div class="invoice-inputs">
+            <input type="text" id="invItemName" placeholder="Item / Service Description" value="">
+            <input type="number" id="invQty" placeholder="Qty" value="" min="1" oninput="calculateLiveTotal()">
+            <input type="number" id="invPrice" placeholder="Price" value="" min="0" step="0.01" oninput="calculateLiveTotal()">
+        </div>
+
+        <div>
+            <button type="button" class="close-invoice-btn" onclick="closeInvoice()">Dismiss Manifest</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const particles = [];
+    const particleCount = 35;
+    const gridSpacing = 50;
+
+    class DataParticle {
+        constructor() { this.reset(); this.y = Math.random() * canvas.height; }
+        reset() { this.x = Math.random() * canvas.width; this.y = -10; this.speed = 0.5 + Math.random() * 0.8; this.size = 1 + Math.random() * 1.5; this.alpha = 0.1 + Math.random() * 0.35; }
+        update() { this.y += this.speed; if (this.y > canvas.height) this.reset(); }
+        draw() { ctx.fillStyle = `rgba(0, 214, 255, ${this.alpha})`; ctx.fillRect(this.x, this.y, this.size, this.size * 4); }
+    }
+    for (let i = 0; i < particleCount; i++) particles.push(new DataParticle());
+
+    function renderPipeline() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = 'rgba(10, 132, 255, 0.025)'; ctx.lineWidth = 1;
+        for (let x = 0; x < canvas.width; x += gridSpacing) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+        for (let y = 0; y < canvas.height; y += gridSpacing) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(renderPipeline);
+    }
+    renderPipeline();
+
+    const form = document.getElementById('billingForm');
+    const phoneInput = document.getElementById('cust-phone');
+    const dateInput = document.getElementById('entry-date');
+    const submitBtn = document.getElementById('submitBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const tbody = document.getElementById('tableBody');
+    const deckTitle = document.getElementById('deckTitle');
+    const stateIndicator = document.getElementById('stateIndicator');
+    const actionBtnGroup = document.getElementById('actionBtnGroup');
+
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+
+    // State Tracking Variable for Edits (-1 implies Create Mode)
+    let editingIndex = -1;
+
+    phoneInput.addEventListener('input', (e) => {
+        let input = e.target.value.replace(/\D/g, '');
+        let size = input.length;
+        if (size === 0) { e.target.value = ''; } 
+        else if (size < 4) { e.target.value = '(' + input; } 
+        else if (size < 7) { e.target.value = '(' + input.substring(0, 3) + ') ' + input.substring(3); } 
+        else { e.target.value = '(' + input.substring(0, 3) + ') ' + input.substring(3, 6) + '-' + input.substring(6, 10); }
+    });
+
+    window.addEventListener('DOMContentLoaded', loadSavedProfiles);
+
+    function getStoredProfiles() {
+        const data = localStorage.getItem('matrix_profiles');
+        return data ? JSON.parse(data) : [];
+    }
+
+    function loadSavedProfiles() {
+        tbody.innerHTML = '';
+        const profiles = getStoredProfiles();
+        const phonesList = profiles.map(p => p.phone);
+
+        profiles.forEach((profile, index) => {
+            const matchCount = phonesList.filter(p => p === profile.phone).length;
+            let statusBadgeHTML = matchCount >= 3 
+                ? `<div><span class="badge frequent-badge"><i class="bx bx-diamond"></i> Frequent Buyer</span></div>`
+                : `<div><span class="badge standard-badge"><i class="bx bx-user"></i> Standard Member</span></div>`;
+
+            const row = document.createElement('tr');
+            
+            // Allow row clicking to display the manifest only when clicking outside the action button container
+            row.addEventListener('click', (e) => {
+                if (!e.target.closest('.row-actions-cell')) {
+                    generateInvoice(profile.invoiceID, profile.name, profile.phone, profile.email, profile.entryDate, profile.address);
+                }
+            });
+
+            row.innerHTML = `
+                <td style="color: var(--secondary); font-family: monospace; font-weight: 700;">${profile.invoiceID}</td>
+                <td style="color: var(--text-muted);">${profile.entryDate}</td>
+                <td><div style="font-weight: 600;">${profile.name}</div>${statusBadgeHTML}</td>
+                <td style="line-height: 1.3;">
+                    <div class="recorded-phone" style="color: var(--text-main)">${profile.phone}</div>
+                    <div style="color: var(--text-muted); font-size: 0.95rem;">${profile.email}</div>
+                </td>
+                <td style="color: var(--text-muted);">${profile.address}</td>
+                <td class="row-actions-cell">
+                    <button type="button" class="edit-row-btn" onclick="startEditing(${index})">
+                        <i class="bx bx-edit-alt"></i> Edit
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Triggers form state modification to match selected index row values
+    function startEditing(index) {
+        const profiles = getStoredProfiles();
+        const targetProfile = profiles[index];
+        if (!targetProfile) return;
+
+        editingIndex = index;
+
+        // Populate fields
+        document.getElementById('cust-invoice-id').value = targetProfile.invoiceID;
+        document.getElementById('cust-name').value = targetProfile.name;
+        document.getElementById('cust-phone').value = targetProfile.phone;
+        document.getElementById('cust-email').value = targetProfile.email;
+        document.getElementById('entry-date').value = targetProfile.entryDate;
+        document.getElementById('cust-address').value = targetProfile.address;
+
+        // Change Title & Subtitle Styling to alert user they are editing
+        deckTitle.innerHTML = `<i class="bx bx-edit-alt" style="color: var(--warning-glow); text-shadow: 0 0 8px var(--warning-glow);"></i> Modify Profile`;
+        stateIndicator.innerHTML = `<i class="bx bx-git-pull-request" style="color: var(--warning-glow)"></i> Editing array index entry <span>#${index + 1}</span>. Direct changes to update ledger record.`;
+
+        // Swap out default buttons for a focused "Update Matrix" and "Cancel" layout workflow
+        actionBtnGroup.innerHTML = `
+            <button type="button" id="cancelEditBtn" class="action-btn cancel-action" onclick="resetFormState()"><i class="bx bx-x"></i> Cancel</button>
+            <button type="button" id="updateBtn" class="action-btn" onclick="processProfileCommit()" style="background: linear-gradient(135deg, var(--warning-glow) 0%, #D48800 100%); box-shadow: 0 4px 15px rgba(255, 179, 0, 0.3);"><i class="bx bx-refresh"></i> Update Record</button>
+        `;
+    }
+
+    // Reverts Deck panel back to creation state layout
+    function resetFormState() {
+        editingIndex = -1;
+        form.reset();
+        dateInput.value = today;
+
+        deckTitle.innerHTML = `<i class="bx bx-id-card"></i> Profile Entry Deck`;
+        stateIndicator.innerHTML = `<i class="bx bx-shield-quarter" style="color: var(--accent-glow)"></i> Submissions permanently save to your browser's storage database.`;
+        
+        actionBtnGroup.innerHTML = `
+            <button type="button" id="saveBtn" class="action-btn secondary-action" onclick="processProfileCommit()"><i class="bx bx-save"></i> Save Profile</button>
+            <button type="button" id="submitBtn" class="action-btn" onclick="processProfileCommit()"><i class="bx bx-check-shield"></i> Commit</button>
+        `;
+    }
+
+    function generateInvoice(id, name, phone, email, date, address) {
+        document.getElementById('invIdTrack').textContent = id;
+        document.getElementById('invName').textContent = name;
+        document.getElementById('invPhone').textContent = phone;
+        document.getElementById('invEmail').textContent = email;
+        document.getElementById('invDate').textContent = date;
+        document.getElementById('invAddress').textContent = address;
+        document.getElementById('invRef').textContent = 'SYS-' + Math.floor(10 + Math.random() * 89);
+        
+        calculateLiveTotal();
+        document.getElementById('invoiceOverlay').classList.add('active');
+    }
+
+    function calculateLiveTotal() {
+        const qty = parseFloat(document.getElementById('invQty').value) || 0;
+        const price = parseFloat(document.getElementById('invPrice').value) || 0;
+        const total = qty * price;
+        document.getElementById('invTotalDisplay').textContent = '$ ' + total.toFixed(2);
+    }
+
+    function closeInvoice() {
+        document.getElementById('invoiceOverlay').classList.remove('active');
+    }
+
+    function processProfileCommit() {
+        if (form.checkValidity()) {
+            const compiledProfile = {
+                invoiceID: document.getElementById('cust-invoice-id').value.trim(),
+                name: document.getElementById('cust-name').value,
+                phone: phoneInput.value,
+                email: document.getElementById('cust-email').value.toLowerCase().trim(),
+                entryDate: dateInput.value,
+                address: document.getElementById('cust-address').value
+            };
+
+            const profiles = getStoredProfiles();
+
+            if (editingIndex > -1) {
+                // Update specific index row mutations inside local array
+                profiles[editingIndex] = compiledProfile;
+            } else {
+                // standard injection process flow (Unshift prepend initialization)
+                profiles.unshift(compiledProfile);
+            }
+
+            localStorage.setItem('matrix_profiles', JSON.stringify(profiles));
+
+            // Reload Data and clean state mutations
+            loadSavedProfiles();
+            resetFormState();
+        } else {
+            form.reportValidity();
+        }
+    }
+
+    // Remapped element trigger logic bindings to work seamlessly inside unified dynamic execution layout context switches
+    submitBtn.addEventListener('click', processProfileCommit);
+    saveBtn.addEventListener('click', processProfileCommit);
+</script>
+
+</body>
+</html>
