@@ -1,0 +1,544 @@
+/* =========================================================
+   REPORTS PAGE — PREMIUM GOLD UI
+   Matches InvoiceHub Dashboard + Users Management
+========================================================= */
+
+
+/* =========================
+   PAGE HEADER
+========================= */
+
+.page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 22px;
+
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+
+.page-head h1 {
+    font-size: 30px;
+    font-weight: 800;
+
+    color: #1c1917;
+
+    letter-spacing: -0.03em;
+}
+
+
+.page-head p {
+    margin-top: 6px;
+
+    color: #78716c;
+}
+
+
+/* =========================
+   PANEL / CARD
+========================= */
+
+.panel-pad {
+    padding: 24px;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border: 1px solid #eadfca;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 10px 30px rgba(120, 90, 20, 0.08);
+}
+
+
+/* =========================
+   TWO COLUMN LAYOUT
+========================= */
+
+.two-col {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+}
+
+
+@media (max-width: 900px) {
+
+    .two-col {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.report-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+/* =========================
+   LABEL
+========================= */
+
+label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    color: #57534e;
+}
+
+
+/* =========================
+   SELECT + DATE INPUT
+========================= */
+
+.select,
+input[type="date"] {
+
+    width: 100%;
+    height: 48px;
+
+    padding: 0 16px;
+
+    background: #ffffff;
+
+    border: 1px solid #e8dfcc;
+
+    border-radius: 12px;
+
+    color: #1c1917;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.select:hover,
+input[type="date"]:hover {
+
+    border-color: #d8c58f;
+}
+
+
+.select:focus,
+input[type="date"]:focus {
+
+    border-color: #d4af37;
+
+    box-shadow:
+        0 0 0 3px rgba(212, 175, 55, 0.14);
+}
+
+
+/* =========================
+   DATE INPUT
+========================= */
+
+input[type="date"] {
+
+    color-scheme: light;
+
+    cursor: pointer;
+}
+
+
+/* Calendar Icon */
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+
+    cursor: pointer;
+
+    opacity: 0.65;
+
+    filter:
+        sepia(1)
+        saturate(4)
+        hue-rotate(355deg)
+        brightness(0.72);
+
+    transition: opacity 0.2s ease;
+}
+
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+
+    opacity: 1;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 10px;
+
+    color: #292524;
+}
+
+
+/* Table Header */
+
+.table thead {
+
+    background:
+        linear-gradient(
+            90deg,
+            #fdf8e8,
+            #f8efd2
+        );
+}
+
+
+.table th {
+
+    padding: 16px;
+
+    text-align: left;
+
+    color: #725300;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.03em;
+
+    border-bottom: 1px solid #ead9a7;
+}
+
+
+/* Table Data */
+
+.table td {
+
+    padding: 16px;
+
+    color: #44403c;
+
+    border-top: 1px solid #eee7da;
+}
+
+
+/* Row Hover */
+
+.table tbody tr {
+
+    transition: background 0.2s ease;
+}
+
+
+.table tbody tr:hover {
+
+    background: #fffaf0;
+}
+
+
+/* =========================
+   BADGES
+========================= */
+
+.badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+/* Success */
+
+.badge-success {
+
+    background: rgba(40, 118, 91, 0.10);
+
+    color: #28765b;
+
+    border: 1px solid rgba(40, 118, 91, 0.20);
+}
+
+
+/* Optional Pending Badge */
+
+.badge-warning {
+
+    background: rgba(212, 175, 55, 0.14);
+
+    color: #8a6500;
+
+    border: 1px solid rgba(212, 175, 55, 0.28);
+}
+
+
+/* Optional Failed Badge */
+
+.badge-danger {
+
+    background: rgba(185, 28, 28, 0.08);
+
+    color: #b91c1c;
+
+    border: 1px solid rgba(185, 28, 28, 0.18);
+}
+
+
+/* =========================
+   TIMELINE
+========================= */
+
+.timeline {
+
+    list-style: none;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+.timeline-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px 14px;
+
+    margin-bottom: 8px;
+
+    background: #fffdf8;
+
+    border: 1px solid #eee3ce;
+
+    border-radius: 12px;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.timeline-item:hover {
+
+    transform: translateY(-1px);
+
+    background: #fffaf0;
+
+    border-color: #ddc886;
+}
+
+
+.timeline-item:last-child {
+
+    margin-bottom: 0;
+}
+
+
+.timeline-item span {
+
+    color: #78716c;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   PRIMARY BUTTON
+========================= */
+
+.btn-primary {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 12px 22px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    color: #17130b;
+
+    background:
+        linear-gradient(
+            135deg,
+            #c89508 0%,
+            #dfb82f 100%
+        );
+
+    box-shadow:
+        0 10px 22px rgba(184, 134, 11, 0.20);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
+}
+
+
+.btn-primary:hover {
+
+    transform: translateY(-2px);
+
+    filter: brightness(1.04);
+
+    box-shadow:
+        0 14px 28px rgba(184, 134, 11, 0.28);
+}
+
+
+.btn-primary:active {
+
+    transform: translateY(0);
+}
+
+
+/* =========================
+   KPI SMALL TEXT
+========================= */
+
+.kpi-value small {
+
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    color: #78716c;
+
+    font-weight: 600;
+}
+
+
+/* =========================
+   TABLE CONTAINER
+========================= */
+
+.table-wrap {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    border-radius: 14px;
+
+    border: 1px solid #eee3ce;
+
+    background: #ffffff;
+}
+
+
+/* =========================
+   REPORT CARD TITLE
+========================= */
+
+.panel-pad h2,
+.card-head h2 {
+
+    color: #1c1917;
+
+    font-size: 18px;
+
+    font-weight: 800;
+}
+
+
+.panel-pad .muted,
+.card-head .muted {
+
+    color: #78716c;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .page-head h1 {
+        font-size: 26px;
+    }
+
+
+    .panel-pad {
+        padding: 18px;
+    }
+
+
+    .table th,
+    .table td {
+        padding: 13px 12px;
+        white-space: nowrap;
+    }
+
+
+    .timeline-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .btn-primary {
+        width: 100%;
+    }
+
+}

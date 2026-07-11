@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>InvoiceHub OS — Admin Reports</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"/>
+      <link rel="stylesheet" href="admin-reports.css">
+    <link rel="stylesheet" href="admin-dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+      .reports-wrap{display:grid;grid-template-columns: 1fr; gap:14px;}
+      .panel-pad{padding:18px;}
+      .two-col{display:grid; grid-template-columns: 1fr 1fr; gap:14px;}
+      @media (max-width:900px){.two-col{grid-template-columns:1fr;}}
+      .chart-box{height: 320px;}
+      .muted{color:var(--muted)}
+      .table{width:100%; border-collapse: collapse;}
+      .table th,.table td{border-bottom:1px solid rgba(255,255,255,.06); padding:10px 12px; text-align:left; font-size: 13px;}
+      .table th{background: rgba(8,18,31,.95); color: var(--muted); text-transform: uppercase; font-size: 12px; font-weight: 900;}
+    </style>
+  </head>
+
+  <body>
+    <div class="bg-layer" aria-hidden="true">
+      <div class="bg-grid"></div>
+      <div class="bg-blob bg-blob-1"></div>
+      <div class="bg-blob bg-blob-2"></div>
+      <div class="bg-blob bg-blob-3"></div>
+      <div class="bg-particles" id="bgParticles"></div>
+    </div>
+
+    <div class="app" id="app">
+      <aside class="sidebar glass" id="sidebar" aria-label="Primary navigation">
+        <div class="brand">
+          <img src="assets/logoo (2).png" alt="InvoiceHub Logo" class="brand-logo" />
+          <div class="brand-text">
+            <div class="brand-name">InvoiceHub</div>
+            <div class="brand-sub">Admin · Reports</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a class="nav-item" href="admin-dashboard.html"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+          <a class="nav-item" href="admin-customers.html"><i class="fa-solid fa-users"></i><span>Users</span></a>
+          <a class="nav-item active" href="#"><i class="fa-solid fa-file-lines"></i><span>Reports</span></a>
+          <a class="nav-item" href="admin-revenue-analytics.html"><i class="fa-solid fa-chart-line"></i><span>Business Analytics</span></a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="logout-btn" id="logoutBtn" type="button" aria-label="Logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="main">
+       
+
+        <main class="content">
+    <!-- Page Actions -->
+    <div class="page-head">
+        <div>
+            <h1>Reports Management 📄</h1>
+            <p class="muted">
+                Generate, download and manage business reports.
+            </p>
+        </div>
+
+       
+
+</div>
+
+    <!-- KPI Cards -->
+    <section class="kpi-grid">
+
+        <article class="card kpi">
+            <div class="kpi-head">
+                <div class="kpi-icon icon-primary">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+            </div>
+
+            <div class="kpi-label">
+                Total Reports
+            </div>
+
+            <div class="kpi-value" id="totalReports">
+    0
+</div>
+        </article>
+
+        <article class="card kpi">
+            <div class="kpi-head">
+                <div class="kpi-icon icon-success">
+                    <i class="fa-solid fa-download"></i>
+                </div>
+            </div>
+
+            <div class="kpi-label">
+                Exported Reports
+            </div>
+
+            <div class="kpi-value" id="exportedReports">
+    0
+</div>
+        </article>
+
+        <article class="card kpi">
+            <div class="kpi-head">
+                <div class="kpi-icon icon-cyan">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+            </div>
+
+            <div class="kpi-label">
+                Reports This Month
+            </div>
+
+            <div class="kpi-value" id="reportsThisMonth">
+    0
+</div>
+        </article>
+
+        <article class="card kpi">
+            <div class="kpi-head">
+                <div class="kpi-icon icon-warn">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+
+            <div class="kpi-label">
+                Last Generated
+            </div>
+
+            <div class="kpi-value" id="lastGenerated">
+    Never
+</div>
+        </article>
+
+    </section>
+
+    <!-- Report Generator -->
+
+    <article class="card panel-pad">
+
+        <div class="card-head">
+            <h2>Generate New Report</h2>
+        </div>
+
+        <div class="two-col">
+
+            <div>
+
+                <label>Report Type</label>
+
+                <select class="select" id="reportType">
+
+                    <option>Revenue Report</option>
+
+                    <option>GST Report</option>
+
+                    <option>Platform Summary</option>
+
+                    <option>Business Analytics Summary</option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label>Export Format</label>
+
+                <select class="select" id="exportFormat">
+
+                    <option>PDF</option>
+
+                    <option>Excel</option>
+
+                    <option>CSV</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="two-col">
+
+            <div>
+
+                <label>From</label>
+
+                <input type="date" id="dateFrom">
+
+            </div>
+
+            <div>
+
+                <label>To</label>
+
+                <input type="date" id="dateTo">
+
+            </div>
+
+        </div>
+
+        <br>
+
+     <button class="btn-primary" id="generateReportBtn">
+    <i class="fa-solid fa-file-export"></i>
+    Generate Report
+</button>
+
+    </article>
+
+    <!-- Report History -->
+
+    <article class="card panel-pad">
+
+        <div class="card-head">
+
+            <h2>Report History</h2>
+
+        </div>
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Report ID</th>
+
+                    <th>Report Name</th>
+
+                    <th>Generated On</th>
+
+                    <th>Format</th>
+
+                    <th>Status</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+           <tbody id="reportHistoryBody">
+
+    <tr>
+        <td colspan="6" style="text-align: center; padding: 30px;">
+            No reports generated yet.
+        </td>
+    </tr>
+
+</tbody>
+        </table>
+
+    </article>
+
+    <!-- Recent Downloads -->
+
+    <article class="card panel-pad">
+
+        <div class="card-head">
+
+            <h2>Recent Downloads</h2>
+
+        </div>
+
+      <ul class="timeline" id="recentDownloads">
+
+    <li class="timeline-item">
+
+        No reports downloaded yet.
+
+        <span class="muted">
+            Download a report to see it here.
+        </span>
+
+    </li>
+
+</ul>
+
+    </article>
+
+</section>
+
+         
+        </main>
+      </div>
+    </div>
+
+    <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
+
+    <script src="admin-reports.js" defer></script>
+  </body>
+</html>
