@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Smart Billing System</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Your CSS -->
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f4f7ff;
+}
+
+.wrapper {
+    display: flex;
+}
+
+.sidebar {
+    width: 240px;
+    background: #1e2a78;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.sidebar h3 {
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+.glass {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.summary-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #0d6efd;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- SaaS Animated Background -->
+<div class="mesh-background">
+
+    <div class="gradient gradient1"></div>
+    <div class="gradient gradient2"></div>
+    <div class="gradient gradient3"></div>
+
+    <div class="cursor-glow"></div>
+
+</div>
+
+<!-- Background Decoration -->
+    
+    <!-- Background Decoration -->
+     <div class="mesh-background">
+
+    <div class="gradient gradient1"></div>
+    <div class="gradient gradient2"></div>
+    <div class="gradient gradient3"></div>
+
+    <div class="cursor-glow"></div>
+
+</div>
+<div class="bg-wrapper">
+    <div class="icon icon1">
+    <i class="bi bi-receipt-cutoff"></i>
+</div>
+
+<div class="icon icon2">
+    <i class="bi bi-credit-card"></i>
+</div>
+
+<div class="icon icon3">
+    <i class="bi bi-cash-stack"></i>
+</div>
+
+
+
+  
+</div>
+
+<div class="floating-icons">
+
+    <i class="bi bi-receipt icon icon1"></i>
+    <i class="bi bi-credit-card-2-front icon icon2"></i>
+    <i class="bi bi-cash-coin icon icon3"></i>
+    <i class="bi bi-wallet2 icon icon4"></i>
+    <i class="bi bi-graph-up-arrow icon icon5"></i>
+    <i class="bi bi-calculator icon icon6"></i>
+    <i class="bi bi-file-earmark-text icon icon7"></i>
+    <i class="bi bi-currency-rupee icon icon8"></i>
+
+</div>
+    
+    <div class="container py-4">
+
+    
+    
+
+<!-- Header -->
+
+<div class="page-header mb-4">
+    <h2 class="page-title">
+        <i class="bi bi-receipt-cutoff me-2"></i>
+        Invoice & GST Module
+    </h2>
+
+    <p class="page-subtitle">
+        Create professional GST invoices with ease.
+    </p>
+</div>
+<!-- Company Information -->
+<div class="card glass mt-4 p-3">
+
+<h5>
+<i class="bi bi-building"></i>
+Company Information
+</h5>
+
+<div class="row">
+
+<div class="col-md-6">
+<input
+id="companyName"
+class="form-control mt-2"
+placeholder="Company Name">
+</div>
+
+<div class="col-md-6">
+<input
+    id="companyGST"
+    class="form-control mt-2"
+    placeholder="Company GST Number"
+    maxlength="15"
+    pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{3}"
+    title="Enter valid 15-digit GSTIN">
+</div>
+
+<div class="col-md-6">
+<input
+id="companyPhone"
+class="form-control mt-2"
+placeholder="Phone">
+</div>
+
+<div class="col-md-6">
+<input
+id="companyEmail"
+class="form-control mt-2"
+placeholder="Email">
+</div>
+
+<div class="col-12">
+<textarea
+id="companyAddress"
+class="form-control mt-2"
+placeholder="Company Address"></textarea>
+</div>
+
+</div>
+
+</div>
+<!-- Customer -->
+<div class="card glass mt-4 p-3">
+<h5>
+
+<i class="bi bi-person-fill me-2 text-primary"></i>
+
+Customer Information
+
+</h5>
+
+<div class="row">
+<div class="col-md-6"><input
+id="customerName"
+class="form-control mt-2"
+placeholder="Name">
+</div>
+<div class="col-md-6"><input id="customerMobile" class="form-control mt-2" placeholder="Mobile"></div>
+<div class="col-md-6"><input id="customerEmail" class="form-control mt-2" placeholder="Email"></div>
+<div class="col-md-6"><input
+    id="customerGST"
+    class="form-control mt-2"
+    placeholder="Customer GST Number (15 Characters)"
+    maxlength="15"
+    pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{3}"
+    title="Enter a valid GSTIN (Example: 37ABCDE1234F1Z5)"
+    style="text-transform:uppercase;"></div>
+<div class="col-12"><textarea id="customerAddress" class="form-control mt-2" placeholder="Address"></textarea></div>
+</div>
+</div>
+
+<!-- Invoice -->
+<div class="card glass mt-4 p-3">
+<h5>
+<i class="bi bi-file-earmark-text me-2 text-success"></i>
+Invoice Details
+</h5>
+
+<div class="row">
+<div class="col-md-3">
+<label>Invoice Number</label>
+<input id="invoiceNumber" class="form-control" readonly>
+</div>
+
+<div class="col-md-3">
+<label>Date</label>
+<input type="date" id="invoiceDate" class="form-control">
+</div>
+
+<div class="col-md-3">
+<label>Due Date</label>
+<input type="date" id="dueDate" class="form-control">
+</div>
+
+<div class="col-md-3">
+<label>Status</label>
+<select id="invoiceStatus" class="form-control">
+<option>Draft</option>
+<option>Paid</option>
+<option>Pending</option>
+</select>
+</div>
+</div>
+
+</div>
+
+<!-- Products -->
+<div class="card glass mt-4 p-3">
+
+<div class="d-flex justify-content-between">
+<h5>
+<i class="bi bi-box-seam me-2 text-warning"></i>
+Products
+</h5>
+<button class="btn btn-primary" onclick="addRow()">Add Product</button>
+</div>
+
+<table class="table table-bordered mt-3" id="productTable">
+<thead>
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+<th>GST %</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+</thead>
+
+   <tbody id="productBody">
+
+<tr>
+
+<td>
+<input
+type="text"
+class="form-control product-name"
+placeholder="Enter Product">
+</td>
+
+<td>
+<input type="number"
+class="form-control qty"
+value="1"
+min="1">
+</td>
+
+<td>
+<input type="number"
+class="form-control price"
+value="0"
+min="0">
+</td>
+
+<td>
+
+<select class="form-select gst">
+
+<option value="0">0%</option>
+
+<option value="5">5%</option>
+
+<option value="12">12%</option>
+
+<option value="18" selected>18%</option>
+
+<option value="28">28%</option>
+
+</select>
+
+</td>
+
+<td class="lineTotal">
+₹0.00
+</td>
+
+<td>
+
+<button class="btn btn-danger btn-sm removeBtn">
+
+<i class="bi bi-trash"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+</tbody> 
+</table>
+
+</div>
+
+<!-- Summary -->
+<div class="row mt-4">
+<div class="col-md-4"><div class="summary-card"><h6>Subtotal</h6><h3 id="subtotal">₹0</h3></div></div>
+<div class="col-md-4"><div class="summary-card"><h6>GST</h6><h3 id="gstTotal">₹0</h3></div></div>
+<div class="col-md-4"><div class="summary-card"><h6>Grand Total</h6><h3 id="grandTotal">₹0</h3></div></div>
+</div>
+
+<!-- Payment -->
+<div class="card glass mt-4 p-3">
+<h5>
+<i class="bi bi-credit-card me-2 text-info"></i>
+Payment Method
+</h5>
+<select id="paymentMethod" class="form-control">
+
+<option>Cash</option>
+
+<option>UPI</option>
+
+<option>Card</option>
+
+<option>Net Banking</option>
+
+</select>
+<div id="upiField" style="display:none;" class="mt-3">
+
+<label>UPI ID</label>
+
+<input
+type="text"
+id="upiId"
+class="form-control"
+placeholder="Enter UPI ID">
+
+</div>
+
+<div id="bankField" style="display:none;" class="mt-3">
+
+<label>Bank Name</label>
+
+<input
+type="text"
+id="bankName"
+class="form-control"
+placeholder="Enter Bank Name">
+
+<label class="mt-2">Reference Number</label>
+
+<input
+type="text"
+id="referenceNo"
+class="form-control"
+placeholder="Transaction Reference">
+
+</div>
+</div>
+
+<!-- Notes -->
+<div class="card glass mt-4 p-3">
+<h5>
+<i class="bi bi-journal-text me-2 text-danger"></i>
+Notes
+</h5>
+<textarea id="invoiceTerms" class="form-control">
+Goods once sold will not be returned.
+Payment due within 7 days.
+</textarea>
+</div>
+
+<!-- Buttons -->
+<div class="text-end mt-4">
+
+<button class="btn btn-secondary">
+Save Draft
+</button>
+
+
+
+<button
+class="btn btn-primary"
+onclick="generateInvoice()">
+
+<i class="bi bi-receipt"></i>
+
+Generate Invoice
+
+</button>
+
+<button
+class="btn btn-dark ms-2"
+onclick="printInvoice()">
+
+<i class="bi bi-printer"></i>
+
+Print Invoice
+
+</button>
+
+<button
+class="btn btn-success ms-2"
+onclick="downloadPDF()">
+
+<i class="bi bi-download"></i>
+
+Download PDF
+
+</button>
+
+<!-- Floating Button -->
+<div class="floating-btn" onclick="addRow()">
+<i class="bi bi-plus"></i>
+</div>
+</div>
+<!-- JS -->
+ 
+<!-- Invoice Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h4>
+                    <i class="bi bi-eye-fill"></i>
+                    Invoice Preview
+                </h4>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div id="invoicePreview">
+
+
+
+<!-- ================= COMPANY HEADER ================= -->
+
+<!-- ================= PROFESSIONAL HEADER ================= -->
+
+<div class="border border-dark">
+
+    <!-- Invoice Title -->
+
+    <div class="text-center p-3 border-bottom border-dark bg-primary text-white">
+
+ <h1 class="display-3 fw-bold text-white mb-1">
+            TAX INVOICE
+        </h1>
+
+        <small>(Original for Recipient)</small>
+
+    </div>
+
+    <!-- Company Details -->
+
+    <div class="p-4">
+
+        <h2 id="previewCompany"
+class="fw-bold text-primary text-uppercase">
+           
+        </h2>
+
+        <table class="table table-borderless table-sm mb-0">
+
+            <tr>
+
+                <th width="120">GSTIN</th>
+
+                <td id="previewGST"></td>
+
+            </tr>
+
+            <tr>
+
+                <th>Phone</th>
+
+                <td id="previewPhone"></td>
+
+            </tr>
+
+            <tr>
+
+                <th>Email</th>
+
+                <td id="previewEmail"></td>
+
+            </tr>
+
+            <tr>
+
+                <th>Address</th>
+
+                <td id="previewAddress"></td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+<hr>
+<div class="text-end mb-3">
+
+    <div id="qrcode"></div>
+
+    <small class="d-block text-muted">
+        Scan QR Code
+    </small>
+
+</div>
+<!-- ================= BILL TO & INVOICE DETAILS ================= -->
+
+<div class="border border-dark border-top-0">
+
+<div class="row g-0">
+
+<!-- BILL TO -->
+
+<div class="col-md-6 border-end border-dark p-4">
+
+<h3 class="fw-bold mb-4 text-primary">
+BILL TO
+</h3>
+
+<table class="table table-borderless table-sm">
+
+<tr>
+
+<th width="160">
+Customer Name
+</th>
+
+<td id="previewCustomer"></td>
+
+</tr>
+
+<tr>
+
+<th>
+Customer GSTIN
+</th>
+
+<td id="previewCustomerGST"></td>
+
+</tr>
+
+<tr>
+
+<th>
+Mobile
+</th>
+
+<td id="previewCustomerMobile"></td>
+
+</tr>
+
+<tr>
+
+<th>
+Email
+</th>
+
+<td id="previewCustomerEmail"></td>
+
+</tr>
+
+<tr>
+
+<th>
+Address
+</th>
+
+<td id="previewCustomerAddress"></td>
+
+</tr>
+
+</table>
+
+</div>
+
+<!-- INVOICE DETAILS -->
+
+<div class="col-md-6 p-4">
+
+<h3 class="fw-bold mb-4 text-primary">
+INVOICE DETAILS
+</h3>
+
+<table class="table table-borderless table-sm">
+
+<tr>
+
+<th width="180">
+Invoice No
+</th>
+
+<td id="previewInvoice"></td>
+
+</tr>
+
+<tr>
+
+<th>
+Invoice Date
+</th>
+
+<td id="previewDate"></td>
+
+</tr>
+
+<tr>
+
+<th>
+Due Date
+</th>
+
+<td id="previewDueDate"></td>
+
+</tr>
+
+<tr>
+
+<th>
+Status
+</th>
+
+<td>
+
+<span
+id="previewStatus"
+class="fw-bold text-success">
+</span>
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+Payment Method
+</th>
+
+<td id="previewPayment"></td>
+
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+                 <hr>
+                <table class="table table-bordered border-dark mb-0">
+
+<thead style="background:#0d6efd;color:white;">
+
+<tr>
+
+<th width="60">S.No</th>
+
+<th>Product</th>
+
+<th width="80">Qty</th>
+
+<th width="130">Price (₹)</th>
+
+<th width="90">GST %</th>
+
+<th width="140">GST Amt (₹)</th>
+
+<th width="150">Total (₹)</th>
+
+</tr>
+
+</thead>
+
+<tbody id="previewProducts">
+
+</tbody>
+
+</table> 
+<table class="table table-bordered mt-3 w-50 ms-auto">
+
+<tr>
+
+<td>Subtotal</td>
+
+<td id="previewSubtotal"></td>
+
+</tr>
+
+<tr>
+
+<td>GST Total</td>
+
+<td id="previewGSTTotal"></td>
+
+</tr>
+
+<tr class="table-primary">
+
+<th>Grand Total</th>
+
+<th id="previewTotal"></th>
+
+</tr>
+
+</table>
+<div class="border border-dark border-top-0 p-3">
+
+<h5 class="fw-bold">
+Amount in Words
+</h5>
+
+<p id="amountWords" class="mb-0"></p>
+
+</div> 
+<!-- ================= AMOUNT IN WORDS ================= -->
+
+<div class="border border-dark border-top-0">
+
+<div class="row g-0">
+
+<!-- Terms -->
+
+<div class="col-md-6 border-end border-dark p-3">
+
+<h5 class="fw-bold text-primary">
+Terms & Conditions
+</h5>
+
+<div id="previewTerms"></div>
+
+</div>
+
+<!-- Payment Details -->
+<div
+class="col-md-6 p-3"
+id="paymentSection">
+
+<h5 class="fw-bold text-primary">
+Payment Information
+</h5>
+
+<table class="table table-borderless table-sm">
+
+
+
+<tr id="upiRow">
+    <th>UPI ID</th>
+    <td id="previewUPI"></td>
+</tr>
+
+<tr id="bankRow">
+    <th>Bank</th>
+    <td id="previewBank"></td>
+</tr>
+
+<tr id="accountRow">
+    <th>A/C No.</th>
+    <td id="previewAccount"></td>
+</tr>
+
+<tr id="ifscRow">
+    <th>IFSC</th>
+    <td id="previewIFSC"></td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+      
+
+    </div>
+
+   <div class="border border-dark border-top-0">
+
+<div class="row g-0 text-center">
+
+<div class="col-md-6 border-end border-dark p-5">
+
+<h5>
+Customer Signature
+</h5>
+
+<br><br><br>
+
+________________________
+
+</div>
+
+<div class="col-md-6 p-5">
+
+<h5>
+Authorized Signature
+</h5>
+
+<br><br><br>
+
+________________________
+
+</div>
+
+</div>
+
+</div>
+
+<hr>
+<div class="text-center p-4">
+
+<h2 class="text-primary fw-bold">
+Thank You For Your Business!
+</h2>
+
+<p class="text-muted">
+
+This is a computer-generated invoice.
+No signature required.
+
+</p>
+
+</div>
+   
+
+</div>
+
+                    <div class="text-end">
+
+                       
+                    </div>
+
+                </div>
+
+            </div>
+
+         
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
