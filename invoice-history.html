@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance HUD - Invoice History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ============================================================
+           CLEAN FUTURISTIC HUD STYLING (NO FLOATING ICONS)
+           ============================================================ */
+        body {
+            background: #020617; 
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            color: white;
+        }
+
+        .hud-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            /* Focus on the deep radial glow for atmosphere */
+            background: radial-gradient(circle at center, #0a192f 0%, #020617 100%);
+        }
+
+        /* HUD BACK BUTTON */
+        .btn-hud-back {
+            background: transparent;
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            border-radius: 30px;
+            padding: 8px 22px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-hud-back:hover {
+            background: #00d4ff;
+            color: #020617;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+
+        /* TABLE UI STYLING */
+        .table-glass {
+            background: rgba(13, 25, 48, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .text-neon { color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+        .badge.success { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid #22c55e; }
+        .badge.warning { background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid #facc15; }
+        
+        .search-container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 5px 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            width: fit-content;
+        }
+
+        .search-container input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 10px;
+            width: 300px;
+            outline: none;
+        }
+
+        .history-page { width: 100%; min-height: 100vh; padding: 50px 40px; }
+
+        .empty-icon {
+            font-size: 3.5rem;
+            color: #00d4ff;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            margin-bottom: 15px;
+            display: block;
+        }
+   
+
+/* PREMIUM GOLD THEME — Invoice History */
+:root{
+  --pg-bg:#fdfbf6;--pg-surface:#fff;--pg-dark:#1c1917;--pg-dark-2:#292524;
+  --pg-border:#f0ebe0;--pg-text:#1c1917;--pg-secondary:#57534e;--pg-muted:#a8a29e;
+  --pg-gold-50:#fdf6e3;--pg-gold-200:#f5e6b8;--pg-gold-300:#ecd18a;
+  --pg-gold-500:#e0b84f;--pg-gold-600:#d4af37;--pg-gold-700:#b8860b;
+}
+body{
+  background:var(--pg-bg)!important;color:var(--pg-text)!important;
+  background-image:radial-gradient(circle at 85% 12%,rgba(212,175,55,.14),transparent 30%),
+  radial-gradient(circle at 10% 85%,rgba(236,209,138,.18),transparent 30%)!important;
+}
+.hud-background{
+  background:radial-gradient(circle at center,rgba(212,175,55,.10) 0%,transparent 55%)!important;
+}
+.btn-hud-back{
+  background:#fff!important;border:1px solid var(--pg-gold-200)!important;
+  color:var(--pg-gold-700)!important;box-shadow:0 2px 10px rgba(28,25,23,.05)!important;
+}
+.btn-hud-back:hover{
+  background:linear-gradient(135deg,var(--pg-gold-700),var(--pg-gold-600))!important;
+  color:#fff!important;box-shadow:0 10px 25px rgba(184,134,11,.28)!important;
+}
+.text-white{color:var(--pg-text)!important;}
+.text-neon,.text-info{
+  color:var(--pg-gold-700)!important;text-shadow:none!important;
+}
+.table-glass{
+  background:var(--pg-surface)!important;border:1px solid var(--pg-border)!important;
+  box-shadow:0 12px 35px rgba(28,25,23,.07)!important;
+}
+.search-container{
+  background:#fff!important;border:1px solid var(--pg-border)!important;
+  box-shadow:0 2px 10px rgba(28,25,23,.04)!important;
+}
+.search-container:focus-within{
+  border-color:var(--pg-gold-600)!important;
+  box-shadow:0 0 0 3px rgba(212,175,55,.14)!important;
+}
+.search-container input{color:var(--pg-text)!important;}
+.search-container input::placeholder{color:var(--pg-muted)!important;}
+#statusFilter{
+  background:#fff!important;color:var(--pg-text)!important;border-color:var(--pg-border)!important;
+}
+#statusFilter:focus{
+  border-color:var(--pg-gold-600)!important;box-shadow:0 0 0 3px rgba(212,175,55,.14)!important;
+}
+.table-dark{
+  --bs-table-bg:#fff!important;--bs-table-color:var(--pg-text)!important;
+  --bs-table-border-color:var(--pg-border)!important;
+  --bs-table-hover-bg:var(--pg-gold-50)!important;--bs-table-hover-color:var(--pg-text)!important;
+}
+.table thead tr{border-color:var(--pg-gold-200)!important;}
+.table thead th{
+  color:var(--pg-gold-700)!important;background:var(--pg-gold-50)!important;
+  border-bottom:1px solid var(--pg-gold-200)!important;
+}
+.table tbody td{color:var(--pg-text)!important;border-color:var(--pg-border)!important;}
+.badge.success{background:#ecfdf3!important;color:#15803d!important;border-color:#bbf7d0!important;}
+.badge.warning{background:var(--pg-gold-50)!important;color:var(--pg-gold-700)!important;border-color:var(--pg-gold-300)!important;}
+.btn-info{
+  background:var(--pg-gold-50)!important;color:var(--pg-gold-700)!important;
+  border-color:var(--pg-gold-200)!important;
+}
+.btn-info:hover{
+  background:linear-gradient(135deg,var(--pg-gold-700),var(--pg-gold-600))!important;
+  color:#fff!important;border-color:transparent!important;
+}
+.btn-outline-danger{background:#fff!important;}
+.empty-icon{color:var(--pg-gold-600)!important;text-shadow:0 0 20px rgba(212,175,55,.25)!important;}
+#emptyState p{color:var(--pg-secondary)!important;}
+::selection{background:var(--pg-gold-200);color:var(--pg-text);}
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-track{background:var(--pg-bg);}
+::-webkit-scrollbar-thumb{background:var(--pg-gold-300);border-radius:10px;border:2px solid var(--pg-bg);}
+::-webkit-scrollbar-thumb:hover{background:var(--pg-gold-600);}
+@media(max-width:900px){
+  .history-page{padding:30px 16px!important;}
+  .dashboard-container>.d-flex{align-items:flex-start!important;flex-direction:column!important;}
+  .dashboard-container>.d-flex>.d-flex{flex-wrap:wrap!important;}
+  .search-container{width:100%!important;}
+  .search-container input{width:min(300px,calc(100vw - 100px))!important;}
+}
+
+</style>
+</head>
+<body>
+
+    <div class="hud-background"></div>
+
+   <div class="container-fluid">
+        <main class="history-page">
+            
+            <a href="dashboard.html" class="btn-hud-back">
+                <i class="bi bi-arrow-left"></i> Back To Dashboard
+            </a>
+
+            <div class="dashboard-container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-white fw-bold"><span class="text-neon">Invoice History</span></h2>
+                    
+                    <div class="d-flex gap-3">
+                        <div class="search-container">
+                            <i class="bi bi-search text-info"></i>
+                            <input type="text" id="searchInput" placeholder="Search for invoice ID...">
+                        </div>
+                        <select id="statusFilter" class="form-select bg-dark text-white border-info" style="width: 150px;">
+                            <option value="all">All Logs</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                        <button class="btn btn-outline-danger" onclick="clearHistory()">Delete  History</button>
+                    </div>
+                </div>
+
+                <div class="table-glass">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr class="text-info border-info" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+                                <th class="pb-3">S.NO</th>
+                                <th class="pb-3">Invoice ID</th>
+                                <th class="pb-3">Coustomer Name</th>
+                                <th class="pb-3">Product Name</th>
+                                <th class="pb-3"> Payment Status</th>
+                               <th class="pb-3">Price</th>
+<th class="pb-3 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- Data dynamically loaded -->
+                        </tbody>
+                    </table>
+
+                    <div id="emptyState" class="text-center py-5 d-none">
+                        <i class="bi bi-shield-exclamation empty-icon"></i>
+                        <p class="fs-5">Invoice History Not found.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+   <script>
+
+document.addEventListener("DOMContentLoaded", fetchHistory);
+
+document.getElementById("searchInput").addEventListener("input", fetchHistory);
+
+document.getElementById("statusFilter").addEventListener("change", fetchHistory);
+async function fetchHistory() {
+
+    const tableBody =
+        document.getElementById("historyTableBody");
+
+    const emptyState =
+        document.getElementById("emptyState");
+
+    const searchTerm =
+        document
+            .getElementById("searchInput")
+            .value
+            .toLowerCase();
+
+    const statusFilter =
+        document
+            .getElementById("statusFilter")
+            .value;
+
+    const token =
+        localStorage.getItem("accessToken");
+
+
+    if (!token) {
+
+        console.error("Access token not found");
+
+        window.location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    tableBody.innerHTML = "";
+
+
+    try {
+
+        const response = await fetch(
+            "http://127.0.0.1:8000/api/invoices/",
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "INVOICE STATUS:",
+            response.status
+        );
+
+        console.log(
+            "INVOICE DATA:",
+            data
+        );
+
+
+        if (response.status === 401) {
+
+            console.error(
+                "Token expired or invalid"
+            );
+
+            window.location.href =
+                "login.html";
+
+            return;
+        }
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Invoice API Error:",
+                data
+            );
+
+            emptyState.classList.remove(
+                "d-none"
+            );
+
+            return;
+        }
+
+
+        const invoices =
+            Array.isArray(data)
+                ? data
+                : (data.results || []);
+
+
+        const filtered =
+            invoices.filter(invoice => {
+
+                const invoiceNumber =
+                    String(
+                        invoice.invoice_number || ""
+                    ).toLowerCase();
+
+
+                const customerName =
+                    String(
+                        invoice.customer_name || ""
+                    ).toLowerCase();
+
+
+                const matchesSearch =
+                    invoiceNumber.includes(
+                        searchTerm
+                    )
+                    ||
+                    customerName.includes(
+                        searchTerm
+                    );
+
+
+                const matchesStatus =
+                    statusFilter === "all"
+                    ||
+                    invoice.status ===
+                        statusFilter;
+
+
+                return (
+                    matchesSearch
+                    &&
+                    matchesStatus
+                );
+            });
+
+
+        if (filtered.length === 0) {
+
+            emptyState.classList.remove(
+                "d-none"
+            );
+
+            return;
+        }
+
+
+        emptyState.classList.add(
+            "d-none"
+        );
+
+
+        filtered.forEach(
+            (invoice, index) => {
+
+                const productNames =
+                    Array.isArray(invoice.items)
+                    &&
+                    invoice.items.length > 0
+
+                        ? invoice.items
+                            .map(
+                                item =>
+                                    item.product_name
+                                    || "-"
+                            )
+                            .join(", ")
+
+                        : "-";
+
+
+                tableBody.insertAdjacentHTML(
+                    "beforeend",
+                    `
+                    <tr>
+
+                        <td>
+                            ${index + 1}
+                        </td>
+
+                        <td>
+                            ${invoice.invoice_number}
+                        </td>
+
+                        <td>
+                            ${invoice.customer_name || "-"}
+                        </td>
+
+                        <td>
+                            ${productNames}
+                        </td>
+
+                        <td>
+
+                            <span class="badge ${
+                                invoice.status === "Paid"
+                                    ? "success"
+                                    : "warning"
+                            }">
+
+                                ${invoice.status}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            ₹ ${parseFloat(
+                                invoice.grand_total || 0
+                            ).toLocaleString("en-IN")}
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="btn btn-info btn-sm"
+                                onclick="viewInvoice(${invoice.id})"
+                                title="View Invoice"
+                            >
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
+
+
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="deleteInvoice(${invoice.id})"
+                                title="Delete Invoice"
+                            >
+
+                                <i class="bi bi-trash"></i>
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+                    `
+                );
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Invoice History Error:",
+            error
+        );
+
+        emptyState.classList.remove(
+            "d-none"
+        );
+    }
+}
+async function deleteInvoice(id){
+
+    if(!confirm("Delete this invoice?")) return;
+
+    const token = localStorage.getItem("accessToken");
+
+    try{
+
+        const response = await fetch(
+
+            `http://127.0.0.1:8000/api/invoices/${id}/`,
+
+            {
+
+                method:"DELETE",
+
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+
+            }
+
+        );
+
+        if(response.ok){
+
+            alert("Invoice Deleted Successfully");
+
+            fetchHistory();
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+}
+async function viewInvoice(id){
+
+    const token = localStorage.getItem("accessToken");
+
+    try{
+
+        const response = await fetch(
+
+            `http://127.0.0.1:8000/api/invoices/${id}/`,
+
+            {
+
+                headers:{
+
+                    "Authorization":`Bearer ${token}`
+
+                }
+
+            }
+
+        );
+
+        const invoice = await response.json();
+
+        console.log(invoice);
+
+        alert(
+
+`Invoice : ${invoice.invoice_number}
+
+Customer : ${invoice.customer_name}
+
+Amount : ₹${invoice.grand_total}
+
+Status : ${invoice.status}`
+
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+}
+async function downloadInvoice(id){
+
+    const token = localStorage.getItem("accessToken");
+
+    try{
+
+        const response = await fetch(
+
+            `http://127.0.0.1:8000/api/invoices/${id}/`,
+
+            {
+
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+
+            }
+
+        );
+
+        if(!response.ok){
+
+            throw new Error("Unable to load invoice.");
+
+        }
+
+        const invoice = await response.json();
+
+        // Store invoice temporarily
+        localStorage.setItem(
+            "selectedInvoice",
+            JSON.stringify(invoice)
+        );
+
+        // Open preview page
+        window.open(
+            `invoice-preview.html?id=${id}`,
+            "_blank"
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert("Unable to download invoice.");
+
+    }
+
+}
+async function clearHistory() {
+    const token = localStorage.getItem("accessToken");
+
+    if (!confirm("Delete all invoices?")) return;
+
+    try {
+
+       const response = await fetch(
+    "http://127.0.0.1:8000/api/invoices/",
+    {
+        headers:{
+            "Authorization":`Bearer ${token}`
+        }
+    }
+); 
+
+        const invoices = await response.json();
+
+        for (const invoice of invoices) {
+
+           await fetch(
+
+`http://127.0.0.1:8000/api/invoices/${invoice.id}/`,
+
+{
+
+method:"DELETE",
+
+headers:{
+
+"Authorization":`Bearer ${token}`
+
+}
+
+}
+
+);
+        }
+
+        alert("All invoice history deleted successfully.");
+
+        fetchHistory();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Error deleting history.");
+
+    }
+
+}
+
+
+
+    </script>
+</body>
+</html>
